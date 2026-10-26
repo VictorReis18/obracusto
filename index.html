@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ObraCusto</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="img/icone-32.png?v=2">
+  <link rel="icon" type="image/png" sizes="64x64" href="img/icone-64.png?v=2">
+  <link rel="apple-touch-icon" href="img/icone-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111111">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="marca"><img src="img/logo.png" alt="" class="marca-logo">ObraCusto <span class="marca-sub">uso interno</span></div>
+    <nav class="abas" aria-label="Telas">
+      <button type="button" data-tela="editor" class="ativa">Custeio</button>
+      <button type="button" data-tela="lista">Meus custeios</button>
+      <button type="button" data-tela="base">Base de preços</button>
+    </nav>
+    <button type="button" id="btnNovo" class="btn primario">+ Novo custeio</button>
+  </header>
+  <div id="avisoServidor" class="faixa-servidor" role="alert" hidden>
+    O ObraCusto foi encerrado neste computador. Para continuar, abra de novo pelo atalho <strong>ObraCusto</strong>. Nada foi perdido.
+  </div>
+
+  <main>
+    <!-- ============ EDITOR ============ -->
+    <section id="tela-editor" class="tela">
+      <div id="avisoPrecos" class="faixa-aviso" hidden></div>
+
+      <div class="layout">
+        <div class="coluna-principal">
+          <div class="cartao">
+            <div class="cartao-topo">
+              <h1 id="tituloOrc">Custeio</h1>
+              <span id="statusSalvo" class="status-salvo"></span>
+            </div>
+            <div class="grade-campos">
+              <label class="largo">Cliente <input data-campo="cliente" autocomplete="off"></label>
+              <label class="largo">Obra / projeto <input data-campo="obra" autocomplete="off"></label>
+              <label class="largo">Contato <input data-campo="contato" autocomplete="off"></label>
+              <label class="largo">Data <input type="date" data-campo="data"></label>
+            </div>
+          </div>
+
+          <div class="cartao">
+            <div class="cartao-topo">
+              <h2>Itens</h2>
+              <div class="segmentado" role="tablist">
+                <button type="button" data-vista="itens" class="ativa">Por produto</button>
+                <button type="button" data-vista="mp">Matéria-prima total</button>
+              </div>
+            </div>
+
+            <div class="adicionar">
+              <div class="busca">
+                <input id="busca" type="search" autocomplete="off"
+                       placeholder="Buscar produto ou matéria-prima por código ou descrição (ex.: F900, calefator, chapa 430)"
+                       aria-label="Buscar produto">
+                <div id="resultados" class="resultados" role="listbox" hidden></div>
+              </div>
+              <label class="qtd-nova">Qtd <input id="qtdNova" value="1" inputmode="decimal"></label>
+              <button type="button" id="btnAvulso" class="btn">+ Item avulso</button>
+            </div>
+
+            <div id="vistaItens"></div>
+            <div id="vistaMp" hidden></div>
+          </div>
+
+          <div class="cartao">
+            <label class="bloco">Observações internas
+              <textarea data-campo="obs" rows="3" placeholder="Premissas do custeio, itens a confirmar, fornecedores…"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <aside class="coluna-resumo">
+          <div class="cartao resumo">
+            <h2>Resumo do custeio</h2>
+            <dl class="linhas-resumo">
+              <div><dt>Custo s/ IPI</dt><dd id="rCustoSem"></dd></div>
+              <div><dt>IPI</dt><dd id="rIpi"></dd></div>
+              <div><dt>Custo c/ IPI</dt><dd id="rCustoCom"></dd></div>
+            </dl>
+            <div class="campos-resumo">
+              <label>Custo considerado
+                <select data-campo="baseCusto">
+                  <option value="sem">Sem IPI</option>
+                  <option value="com">Com IPI</option>
+                </select>
+              </label>
+            </div>
+            <dl class="linhas-resumo">
+              <div class="total"><dt id="rCustoRotulo">Custo total</dt><dd id="rCusto"></dd></div>
+            </dl>
+
+            <div class="bloco-preco">
+              <h3>Referência para o orçamento</h3>
+              <label>Markup (×) <input data-campo="markup" inputmode="decimal" title="Preço sugerido = custo considerado × markup"></label>
+              <dl class="linhas-resumo">
+                <div><dt>Preço sugerido</dt><dd id="rPreco"></dd></div>
+                <div class="discreto"><dt>Margem sobre o preço</dt><dd id="rMargem"></dd></div>
+              </dl>
+            </div>
+
+            <div class="acoes-resumo">
+              <button type="button" class="btn primario" data-acao="imprimir">Imprimir custeio / salvar PDF</button>
+              <label class="check"><input type="checkbox" id="impDetalhe"> Detalhar matérias-primas de cada produto</label>
+              <button type="button" class="btn" data-acao="exportarExcel">Exportar para Excel (modelo)</button>
+              <div class="linha-botoes">
+                <button type="button" class="btn" data-acao="duplicar">Duplicar</button>
+                <button type="button" class="btn perigo" data-acao="excluir">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ LISTA ============ -->
+    <section id="tela-lista" class="tela" hidden>
+      <div class="cartao">
+        <div class="cartao-topo">
+          <h1>Meus custeios</h1>
+          <input id="filtroLista" type="search" placeholder="Filtrar por nº, cliente ou obra" aria-label="Filtrar custeios">
+        </div>
+        <div id="lista"></div>
+      </div>
+      <div class="cartao">
+        <h2>Cópia de segurança</h2>
+        <p class="ajuda">Os custeios ficam guardados neste navegador, neste computador. Exporte uma cópia de vez em quando
+          para não perder nada se o histórico do navegador for limpo, ou para levar para outro computador.</p>
+        <div class="linha-botoes">
+          <button type="button" class="btn" id="btnBackup">Exportar cópia (.json)</button>
+          <button type="button" class="btn" id="btnRestaurar">Importar cópia</button>
+          <input type="file" id="arquivoBackup" accept=".json,application/json" hidden>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BASE ============ -->
+    <section id="tela-base" class="tela" hidden>
+      <div class="layout-base">
+        <div class="cartao">
+          <h1>Planilha em uso</h1>
+          <div id="infoBase"></div>
+
+          <div class="caixa-passos">
+            <strong>Atualizar direto do Google Planilhas</strong>
+            <p id="avisoArquivoLocal" class="ajuda texto-alerta" hidden>
+              Para entrar com a conta Google, feche esta aba e abra o app pelo atalho <strong>ObraCusto</strong> (ou <strong>Abrir ObraCusto.bat</strong>), na pasta do app.
+            </p>
+            <div class="linha-botoes">
+              <button type="button" class="btn primario" id="btnGoogle">Atualizar da planilha do Google</button>
+            </div>
+            <div id="statusGoogle" class="status-import" role="status"></div>
+            <details class="config-google" id="configGoogle">
+              <summary>Configuração do acesso ao Google</summary>
+              <div class="grade-campos">
+                <label class="largo">Link da planilha <input data-config="googlePlanilha" autocomplete="off"></label>
+                <label class="largo">ID do cliente OAuth <input data-config="googleClientId" autocomplete="off" placeholder="…apps.googleusercontent.com"></label>
+              </div>
+              <p class="ajuda"><strong>Configuração inicial (uma vez só)</strong>, com a conta corporativa que tem acesso à planilha:</p>
+              <ol class="passos">
+                <li>Entre em <strong>console.cloud.google.com</strong> e crie um projeto (ex.: “Custeio”). Se aparecer que você não tem permissão para criar projetos, peça à TI.</li>
+                <li>Em <em>APIs e serviços → Biblioteca</em>, procure <strong>Google Sheets API</strong> e clique em <strong>Ativar</strong>.</li>
+                <li>Em <em>Google Auth Platform</em> (ou <em>Tela de permissão OAuth</em>), preencha o nome do app (“Custeio”) e o seu e-mail, e escolha o público <strong>Interno</strong>.</li>
+                <li>Em <em>Clientes</em> (ou <em>Credenciais → Criar credenciais → ID do cliente OAuth</em>), escolha <strong>Aplicativo da Web</strong> e, em <strong>Origens JavaScript autorizadas</strong>, adicione <code>https://victorreis18.github.io</code> (o site publicado) e <code>http://localhost:8765</code> (o app aberto pelo atalho).</li>
+                <li>Copie o <strong>ID do cliente</strong> (termina com <code>.apps.googleusercontent.com</code>) e cole no campo acima.</li>
+                <li>Clique em <strong>Atualizar da planilha do Google</strong>, escolha a conta corporativa e permita a leitura das planilhas.</li>
+              </ol>
+            </details>
+          </div>
+
+          <div class="caixa-passos">
+            <strong>Ou carregar um arquivo .xlsx</strong>
+            <p class="ajuda">No Google Planilhas: <em>Arquivo → Fazer download → Microsoft Excel (.xlsx)</em>, e escolha o arquivo baixado.</p>
+            <div class="linha-botoes">
+              <button type="button" class="btn" id="btnImportar">Carregar arquivo .xlsx</button>
+              <button type="button" class="btn" id="btnBaseOriginal" hidden>Voltar para a base original</button>
+              <input type="file" id="arquivoXlsx" accept=".xlsx" hidden>
+            </div>
+            <div id="statusImport" class="status-import" role="status"></div>
+          </div>
+        </div>
+
+        <div class="cartao">
+          <h2>Preferências</h2>
+          <div class="grade-campos">
+            <label class="largo">Markup padrão (×) <input data-config="markupPadrao" inputmode="decimal"></label>
+            <label class="largo">Custo considerado padrão
+              <select data-config="baseCustoPadrao">
+                <option value="sem">Sem IPI</option>
+                <option value="com">Com IPI</option>
+              </select>
+            </label>
+          </div>
+          <p class="ajuda">Os valores padrão valem para os próximos custeios criados.</p>
+        </div>
+      </div>
+
+      <div class="cartao">
+        <div class="cartao-topo">
+          <h2>Catálogo de produtos</h2>
+          <div class="filtros">
+            <input id="filtroCatalogo" type="search" placeholder="Código ou descrição" aria-label="Filtrar catálogo">
+            <select id="grupoCatalogo" aria-label="Grupo"></select>
+            <label class="check"><input type="checkbox" id="soSemPreco"> Só com matéria-prima sem preço</label>
+          </div>
+        </div>
+        <div id="catalogo"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="avisos" class="avisos" aria-live="polite"></div>
+  <div id="impressao"></div>
+
+  <script src="dados.js"></script>
+  <script src="importar.js"></script>
+  <script src="google.js"></script>
+  <script src="modelo.js"></script>
+  <script src="exportar.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

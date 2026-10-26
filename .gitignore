@@ -1,0 +1,14 @@
+# Dados de custo e planilhas: nunca vão para o GitHub.
+# O site publicado busca os preços direto da planilha do Google, com o login de cada pessoa.
+dados.js
+*.xlsx
+*.xls
+*.csv
+~$*
+
+# Atalho do Windows guarda o caminho deste computador
+*.lnk
+
+# Arquivos do sistema
+Thumbs.db
+desktop.ini
