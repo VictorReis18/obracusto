@@ -111,4 +111,5 @@ Os custeios ficam guardados **no navegador de cada computador**. Use **Meus cust
 | ICONE.png | ícone original do app |
 | lib/ | bibliotecas SheetJS (ler Excel) e JSZip (montar o Excel exportado) |
 | servidor.py, Abrir/Fechar ObraCusto.bat | uso pelo computador, sem o site |
+| ferramentas/ | `limpar-modelo.js` (refaz o modelo.js quando o Modelo.xlsx mudar) e `gerar-icones.py` (refaz as imagens quando o ICONE.png mudar) |
 | dados.js, Modelo.xlsx, ObraCusto (atalho) | só neste computador; não vão para o GitHub |
