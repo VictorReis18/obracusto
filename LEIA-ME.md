@@ -4,29 +4,16 @@ App para levantar o **custo** dos produtos que vão entrar num orçamento. O or�
 
 ## Como abrir
 
-### Pelo site (para todos)
+Dê dois cliques no atalho **ObraCusto** (o que tem o ícone do app) ou em **Abrir ObraCusto.bat**. O app abre no navegador em `http://localhost:8765`.
 
-Abra **https://victorreis18.github.io/obracusto/** no Chrome ou no Edge.
-
-- **Não precisa instalar nada.** Toda atualização publicada chega sozinha na próxima vez que o app for aberto.
-- **Para ter o ícone na área de trabalho ou na barra de tarefas:**
-  - **Chrome:** menu **⋮ → Transmitir, salvar e compartilhar → Instalar página como app…**
-  - **Edge:** menu **… → Aplicativos → Instalar este site como um aplicativo**
-
-  Ele passa a abrir numa janela própria, com o ícone do ObraCusto.
-- **Primeira vez:** o app abre em **Base de preços**. Clique em **Atualizar da planilha do Google** e entre com a sua conta da empresa (precisa ter acesso à planilha de custos).
-
-### Pelo computador (alternativa, sem internet para o app)
-
-Dê dois cliques no atalho **ObraCusto** ou em **Abrir ObraCusto.bat**. O app abre em `http://localhost:8765`.
-
-- O servidor do app (`servidor.py`) roda escondido, sem janela, e só atende este computador.
-- **Encerra sozinho:** cerca de 3 minutos depois que você fecha a última janela do app, o servidor se encerra.
-- **Se aparecer a faixa vermelha** "O ObraCusto foi encerrado neste computador", abra de novo pelo atalho. Nada se perde.
+- **Área de trabalho ou barra de tarefas:** copie o atalho ObraCusto para a área de trabalho. Para fixar na barra de tarefas, clique com o botão direito → *Mostrar mais opções* → *Fixar na barra de tarefas*.
+- **Se a pasta mudar de lugar ou for para outro computador**, o atalho ObraCusto deixa de funcionar, porque guarda o caminho completo. Nesse caso use o **Abrir ObraCusto.bat**, que funciona em qualquer lugar.
+- **Só o navegador fica à mostra.** O servidor do app (`servidor.py`) roda escondido, sem janela, e só atende este computador. Precisa do Python instalado.
+- **Encerra sozinho:** cerca de 3 minutos depois que você fecha a última janela do app, o servidor se encerra. Se aparecer a faixa vermelha "O ObraCusto foi encerrado neste computador", abra de novo pelo atalho; nada se perde.
 - **Para encerrar na hora:** use **Fechar ObraCusto.bat**.
-- **Requisito:** precisa do Python instalado. O atalho ObraCusto guarda o caminho desta pasta; se a pasta mudar de lugar, use o .bat.
+- **Sem o atalho:** ainda dá para abrir o **index.html** direto, mas aí o botão "Atualizar da planilha do Google" não funciona; só o carregamento de arquivo .xlsx.
 
-> **Custeios salvos:** cada endereço do app guarda os seus custeios separados no navegador (o site, o `localhost:8765` e o `index.html` aberto direto são endereços diferentes). Para levar custeios de um para outro:
+> **Custeios salvos:** abrir pelo atalho e abrir o index.html direto são endereços diferentes, e cada um guarda os seus custeios separados no navegador. Para levar custeios de um para outro:
 > 1. No endereço antigo, use **Meus custeios → Exportar cópia**.
 > 2. No novo, use **Meus custeios → Importar cópia**.
 
@@ -58,15 +45,13 @@ Em **Base de preços**, clique em **Atualizar da planilha do Google** e entre co
 - nada é gravado na planilha;
 - a planilha continua privada.
 
-**Configuração inicial no Google Cloud (uma vez só, para todos)**, feita com a conta da empresa:
+**Configuração inicial no Google Cloud (uma vez só)**, feita com a conta da empresa:
 
 1. Entre em **console.cloud.google.com** e crie um projeto (ex.: "ObraCusto"). Se aparecer que você não tem permissão para criar projetos, peça à TI.
 2. Em *APIs e serviços → Biblioteca*, procure **Google Sheets API** e clique em **Ativar**.
 3. Em *Google Auth Platform* (ou *Tela de permissão OAuth*), preencha o nome do app ("ObraCusto") e o seu e-mail, e escolha o público **Interno**.
-4. Em *Clientes* (ou *Credenciais → Criar credenciais → ID do cliente OAuth*), escolha **Aplicativo da Web**. Em **Origens JavaScript autorizadas**, adicione:
-   - `https://victorreis18.github.io` (o site);
-   - `http://localhost:8765` (o app aberto pelo atalho).
-5. Copie o **ID do cliente** (termina com `.apps.googleusercontent.com`) e mande para o Claude: ele deixa o ID gravado no app, assim os colegas não precisam configurar nada.
+4. Em *Clientes* (ou *Credenciais → Criar credenciais → ID do cliente OAuth*), escolha **Aplicativo da Web**. Em **Origens JavaScript autorizadas**, adicione `http://localhost:8765`.
+5. Copie o **ID do cliente** (termina com `.apps.googleusercontent.com`). No app, cole-o em **Base de preços → Configuração do acesso ao Google**.
 6. Clique em **Atualizar da planilha do Google**, escolha a conta da empresa e permita a leitura das planilhas.
 
 Se a TI da empresa bloquear apps de terceiros, ela precisa liberar esse projeto. Como o público é "Interno", só contas da empresa conseguem entrar.
@@ -78,14 +63,6 @@ Se a TI da empresa bloquear apps de terceiros, ela precisa liberar esse projeto.
 
 Custeios antigos mantêm os preços de quando foram feitos. Ao abrir um deles, uma faixa amarela oferece **Atualizar preços**.
 
-## Publicar atualizações do app
-
-O código do app fica no GitHub: **https://github.com/VictorReis18/obracusto**. O site é atualizado a partir dele.
-
-- **Para mudar algo:** peça ao Claude. Ele faz a mudança, testa e publica.
-- **Depois de publicar:** em 1 ou 2 minutos o site já está atualizado para todos. Quem estiver com o app aberto vê a mudança ao recarregar a página (F5).
-- **O que nunca vai para o GitHub:** preços, estruturas, custeios e planilhas. O repositório é público, mas só tem o código; os dados vêm da planilha do Google, com o login de cada pessoa.
-
 ## De onde vêm os números
 
 - **Aba BD_Estruturas**: produto, código da matéria-prima, quantidade e valor da última compra.
@@ -95,21 +72,23 @@ O código do app fica no GitHub: **https://github.com/VictorReis18/obracusto**. 
 
 ## Cuidado
 
-Os custeios ficam guardados **no navegador de cada computador**. Use **Meus custeios → Exportar cópia** de vez em quando. Se limpar os dados do navegador ou trocar de computador, use **Importar cópia** para recuperar tudo.
+Os custeios ficam guardados **no navegador deste computador**. Use **Meus custeios → Exportar cópia** de vez em quando. Se limpar os dados do navegador ou trocar de computador, use **Importar cópia** para recuperar tudo.
 
 ## Arquivos
 
 | Arquivo | O que é |
 |---|---|
+| ObraCusto (atalho) | abre o app, com o ícone; vale só para esta pasta neste computador |
+| Abrir ObraCusto.bat / Fechar ObraCusto.bat | abre o app de qualquer pasta / encerra o servidor do app |
+| servidor.py | servidor local que o atalho liga escondido |
 | index.html, app.js, estilo.css | o app |
+| dados.js | preços e estruturas que vieram com o app (gerados da planilha de 22/10/2026) |
 | importar.js | monta a base a partir da planilha (Google ou arquivo .xlsx) |
 | google.js | login Google e leitura da planilha pela Google Sheets API |
 | exportar.js | gera a planilha de custeio no formato do modelo |
-| modelo.js | o Modelo.xlsx guardado dentro do app, só com a formatação (sem os dados de exemplo) |
-| manifest.webmanifest | nome e ícone do app para "Instalar como app" no navegador |
-| img/ | imagens geradas do ICONE.png: logo sem fundo (topo e impressão), ícone quadrado (aba e app instalado) e icone.ico (atalho do Windows) |
-| ICONE.png | ícone original do app |
+| modelo.js | o Modelo.xlsx guardado dentro do app, só com a formatação |
+| Modelo.xlsx | o modelo original da exportação |
+| manifest.webmanifest | nome e ícone do app para o navegador |
+| ICONE.png, img/ | ícone original e as versões geradas dele (logo sem fundo, ícone quadrado, icone.ico do atalho) |
 | lib/ | bibliotecas SheetJS (ler Excel) e JSZip (montar o Excel exportado) |
-| servidor.py, Abrir/Fechar ObraCusto.bat | uso pelo computador, sem o site |
 | ferramentas/ | `limpar-modelo.js` (refaz o modelo.js quando o Modelo.xlsx mudar) e `gerar-icones.py` (refaz as imagens quando o ICONE.png mudar) |
-| dados.js, Modelo.xlsx, ObraCusto (atalho) | só neste computador; não vão para o GitHub |
