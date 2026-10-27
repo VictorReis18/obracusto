@@ -51,7 +51,7 @@ Em **Base de preços**, clique em **Atualizar da planilha do Google** e entre co
 2. Em *APIs e serviços → Biblioteca*, procure **Google Sheets API** e clique em **Ativar**.
 3. Em *Google Auth Platform* (ou *Tela de permissão OAuth*), preencha o nome do app ("ObraCusto") e o seu e-mail, e escolha o público **Interno**.
 4. Em *Clientes* (ou *Credenciais → Criar credenciais → ID do cliente OAuth*), escolha **Aplicativo da Web**. Em **Origens JavaScript autorizadas**, adicione `http://localhost:8765`.
-5. Copie o **ID do cliente** (termina com `.apps.googleusercontent.com`). No app, cole-o em **Base de preços → Configuração do acesso ao Google**.
+5. O **ID do cliente** (termina com `.apps.googleusercontent.com`) já fica gravado no app, em `GOOGLE_PADRAO` no `app.js`, então ninguém precisa colar nada. Se um dia criar outro cliente, troque o ID lá.
 6. Clique em **Atualizar da planilha do Google**, escolha a conta da empresa e permita a leitura das planilhas.
 
 Se a TI da empresa bloquear apps de terceiros, ela precisa liberar esse projeto. Como o público é "Interno", só contas da empresa conseguem entrar.

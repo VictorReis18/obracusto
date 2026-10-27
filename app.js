@@ -201,15 +201,25 @@
   // Orçamentos
   // ============================================================
 
+  // Acesso ao Google gravado no app, para ninguém precisar configurar.
+  // O ID do cliente não é segredo: o Google só aceita login vindo das origens autorizadas no Google Cloud.
+  const GOOGLE_PADRAO = {
+    googlePlanilha: 'https://docs.google.com/spreadsheets/d/1iG6U_Lq6tEuBozfaeMONddmkuN7h6BA2e645gdRrBBY/edit',
+    googleClientId: '770239984969-rqjgh1c2frtst0qgm324u2fekgb2u50j.apps.googleusercontent.com',
+  };
+
   let orcs = ler(CHAVES.orcs, []);
   let config = Object.assign({
     proximoNumero: 1,
     markupPadrao: 1,
     baseCustoPadrao: 'sem',
-    googlePlanilha: 'https://docs.google.com/spreadsheets/d/1iG6U_Lq6tEuBozfaeMONddmkuN7h6BA2e645gdRrBBY/edit',
-    googleClientId: '',
+    ...GOOGLE_PADRAO,
     ultimoId: null,
   }, ler(CHAVES.config, {}));
+  // Campo deixado vazio numa configuração salva antes volta para o valor gravado no app
+  for (const k of Object.keys(GOOGLE_PADRAO)) {
+    if (!String(config[k] || '').trim()) config[k] = GOOGLE_PADRAO[k];
+  }
 
   let atual = null;
   const expandidos = new Set();
@@ -1150,20 +1160,14 @@
       status.textContent = 'Para entrar com a conta Google, abra o app pelo atalho “ObraCusto” (ou “Abrir ObraCusto.bat”), na pasta do app.';
       return;
     }
-    if (!config.googleClientId.trim()) {
-      $('#configGoogle').open = true;
-      $('[data-config="googleClientId"]').focus();
-      status.className = 'status-import erro';
-      status.textContent = 'Falta colar o ID do cliente OAuth. Siga os passos da configuração inicial abaixo do botão.';
-      return;
-    }
     const botao = $('#btnGoogle');
     botao.disabled = true;
     status.className = 'status-import';
     try {
+      // Campo apagado nesta sessão: usa o valor gravado no app
       aplicarBaseNova(await window.PlanilhaGoogle.ler({
-        clientId: config.googleClientId.trim(),
-        planilha: config.googlePlanilha,
+        clientId: config.googleClientId.trim() || GOOGLE_PADRAO.googleClientId,
+        planilha: config.googlePlanilha.trim() || GOOGLE_PADRAO.googlePlanilha,
         importador: window.ImportarPlanilha,
         aoAndar: t => { status.textContent = t; },
       }), status);
